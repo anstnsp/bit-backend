@@ -1,18 +1,23 @@
+const path = require('path');
+const env = path.join(__dirname, '..', '.env.local')
 //import environment configuration 
-require('dotenv').config();
-
+require('dotenv').config({path:env});
 const express = require('express'); 
 const app = express(); 
 const bodyParser = require('body-parser');
 const api = require('./api')
+const cors = require('cors'); 
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 4000; 
+
+
 
 /* ===========================
 || CONNECT TO MONGODB SERVER ||
 =============================*/
-console.log(process.env.REMOTE_MONGODB_URI);
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.REMOTE_MONGODB_URI, {useNewUrlParser : true});
+mongoose.connect(process.env.REMOTE_MONGODB_URI, {useNewUrlParser : true,  useUnifiedTopology: true});
 const db = mongoose.connection;
 db.once('open', ()=>{
   console.log("DB Connected !!");
@@ -23,12 +28,14 @@ db.on("error", (err)=>{
 
 
 
+
 /* ========================
 ||       MIDDLEWARE      ||
 ==========================*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
-
+app.use(cors()); 
+app.use(cookieParser());
 app.use('/api', api);
 
 /* ========================
@@ -68,7 +75,7 @@ process.on('exit', function (code) {
 const gracefulCleanJob = function() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
- 
+      resolve();
     }, 500);  
   });
 };
