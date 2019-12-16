@@ -69,7 +69,8 @@ function getToken (userInfo) {
     const payload = {
       id: userInfo.id,
       name: userInfo.name, 
-      email: userInfo.email
+      email: userInfo.email,
+      phoneNumber: userInfo.phoneNumber
     };
     const JWTSECRET = process.env.JWT_SECRET; 
     const options = {

@@ -7,12 +7,11 @@ exports.signUp = async (req, res) => {
   const userData = req.body.data; 
   try {
     const userInfo = await User.findOneById(userData.id); 
-    if(userInfo) throw resultCode.USER_EXIST; 
+    if(userInfo) return getResponse(res, resultCode.USER_EXIST);
     await User.create(userData); 
     return getResponse(res, resultCode.SUCCESS); 
   } catch(error) {
     console.error(error); 
-    if(error.code === 1) return getResponse(res, resultCode.USER_EXIST); 
     return getResponse(res, resultCode.ETC_ERROR);
   }
 }
@@ -21,8 +20,8 @@ exports.signUp = async (req, res) => {
 exports.updateUserInfo = async (req, res) => {
   console.log( ` ### updateUserInfo start ###`)
   try {
-    const userData = req.body.data; 
-    const updateResult = await User.updateUserInfo(userData); 
+    const user = req.tokenData;
+    const updateResult = await User.updateUserInfo(user); 
     console.log(`updated data: ${updateResult}`)
     return getResponse(res, resultCode.SUCCESS);
   } catch(error) {
@@ -35,7 +34,8 @@ exports.updateUserInfo = async (req, res) => {
 exports.deleteUserById = async (req, res) => {
   console.log(` ### delete user ### `);
   try {
-    await User.deleteUserById(req.params.id); 
+    const user = req.tokenData;
+    await User.deleteUserById(user.id); 
     return getResponse(res, resultCode.SUCCESS); 
   } catch(error) {
     console.error(error); 
@@ -59,12 +59,12 @@ exports.findAllUser = async (req, res) => {
 exports.findOneUserById = async (req, res) => {
   console.log(` ### findOneUserById ### `)
   try {
-    const userInfo = await User.findOneById(req.params.id);
-    if(!userInfo) throw resultCode.NO_USER; 
+    const user = req.tokenData;
+    const userInfo = await User.findOneById(user.id);
+    if(!userInfo) return getResponse(res, resultCode.NO_USER);  
     return getResponse(res, resultCode.SUCCESS, userInfo._doc); 
   } catch(error) {
     console.error(error); 
-    if(error.code === 2) return getResponse(res, resultCode.NO_USER);
     return getResponse(res, resultCode.ETC_ERROR);
   }
 }

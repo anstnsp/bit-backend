@@ -9,7 +9,7 @@ router.put('/:id', authController.checkToken, userController.updateUserInfo);
 //회원탈퇴
 router.delete('/:id', authController.checkToken, userController.deleteUserById);
 //회원한명조회
-router.get('/:id', userController.findOneUserById);
+router.get('/:id', authController.checkToken, userController.findOneUserById);
 //모든회원조회 
 router.get('/', userController.findAllUser); 
 
